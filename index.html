@@ -41,40 +41,57 @@
   header{
     position:sticky; top:0; z-index:10;
     background:var(--ink); color:#fff;
-    padding:14px 16px 12px;
+    padding:14px 16px;
+    min-height:52px;
+    display:flex; align-items:center;
   }
-  header h1{
-    margin:0 0 10px; font-size:1.15rem; font-weight:700; letter-spacing:.2px;
+  header h1{margin:0; font-size:1.15rem; font-weight:700; letter-spacing:.2px;}
+  header .header-row{display:flex; align-items:center; gap:4px; width:100%;}
+  .back-btn{
+    background:none; border:none; color:#fff; font-size:1.4rem; line-height:1;
+    padding:2px 10px 2px 0; font-family:inherit; flex-shrink:0;
   }
-  .header-row{display:flex; gap:8px;}
-  select, input[type=date], input[type=text]{
-    font-family:inherit; font-size:0.95rem;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(255,255,255,.08); color:#fff;
-    border-radius:var(--radius); padding:9px 10px;
-  }
-  select{flex:1; min-width:0;}
-  select option{color:#111;}
-  input[type=date]{color-scheme:dark; flex-shrink:0;}
 
   nav.tabs{
     display:flex; background:var(--surface); border-bottom:1px solid var(--border);
-    position:sticky; top:64px; z-index:9;
+    position:sticky; top:52px; z-index:9;
   }
+  nav.tabs[hidden]{display:none;}
   nav.tabs button{
     flex:1; padding:11px 4px; background:none; border:none; border-bottom:3px solid transparent;
     font-size:0.85rem; font-weight:600; color:var(--ink-soft); font-family:inherit;
   }
   nav.tabs button.active{color:var(--accent); border-bottom-color:var(--accent);}
 
-  main{padding:10px 14px 24px; max-width:640px; margin:0 auto;}
+  main{padding:14px 14px 24px; max-width:640px; margin:0 auto;}
   main[hidden]{display:none;}
 
   .empty{
     text-align:center; color:var(--ink-soft); padding:40px 20px; font-size:0.95rem; line-height:1.5;
   }
 
+  /* Home */
+  .home-intro{font-size:0.85rem; color:var(--ink-soft); margin:0 0 14px;}
+  .home-list{display:flex; flex-direction:column; gap:10px;}
+  .class-select-btn{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    padding:16px 18px; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface);
+    font-family:inherit; text-align:left; width:100%;
+  }
+  .class-select-btn .cn-name{font-size:1.02rem; font-weight:700; color:var(--ink);}
+  .class-select-btn .cn-count{font-size:0.78rem; font-weight:500; color:var(--ink-soft); white-space:nowrap;}
+  .verwaltung-btn{
+    margin-top:16px; padding:15px 18px; border-radius:var(--radius); border:1px dashed var(--border);
+    background:none; font-family:inherit; font-size:0.92rem; font-weight:600; color:var(--ink-soft);
+    text-align:left; width:100%; display:flex; align-items:center; gap:8px;
+  }
+
   /* Erfassen */
+  .date-row{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .date-row input[type=date]{
+    flex:1; border:1px solid var(--border); background:var(--surface); color:var(--ink);
+    color-scheme:light; border-radius:var(--radius); padding:9px 10px; font-family:inherit; font-size:0.95rem;
+  }
   .student-row{padding:14px 2px; border-bottom:1px solid var(--border);}
   .student-name{font-weight:700; font-size:1rem; margin-bottom:10px;}
   .student-name .num{color:var(--ink-soft); font-weight:500; margin-right:6px;}
@@ -105,7 +122,7 @@
   /* Auswertung */
   .filter-row{display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
   .filter-row label{font-size:0.8rem; color:var(--ink-soft); display:flex; flex-direction:column; gap:3px;}
-  .filter-row input[type=date]{color-scheme:light; border:1px solid var(--border); background:var(--surface); color:var(--ink);}
+  .filter-row input[type=date]{color-scheme:light; border:1px solid var(--border); background:var(--surface); color:var(--ink); border-radius:var(--radius); padding:9px 10px; font-family:inherit; font-size:0.95rem;}
   .stat-card{
     border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:10px; background:var(--surface);
   }
@@ -118,13 +135,13 @@
     background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:0.95rem; font-family:inherit; margin-bottom:16px;
   }
 
-  /* Klasse */
+  /* Verwaltung */
   section.block{border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px; background:var(--surface);}
   section.block h2{font-size:0.95rem; margin:0 0 10px;}
   .field{display:flex; flex-direction:column; gap:5px; margin-bottom:10px;}
   .field label{font-size:0.8rem; color:var(--ink-soft);}
   .field input, .field select{
-    border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-size:0.95rem; font-family:inherit; background:var(--bg); color:var(--ink);
+    border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-size:0.95rem; font-family:inherit; background:var(--bg); color:var(--ink); width:100%;
   }
   .btn{
     padding:11px; border-radius:var(--radius); border:1px solid var(--accent); background:var(--accent); color:#fff;
@@ -153,23 +170,17 @@
 </head>
 <body>
 
-<header>
-  <h1>Mitarbeit</h1>
-  <div class="header-row">
-    <select id="classSelect"></select>
-    <input type="date" id="dateInput">
-  </div>
-</header>
+<header id="appHeader"></header>
 
-<nav class="tabs">
-  <button class="tab-btn active" data-tab="erfassen">Erfassen</button>
+<nav class="tabs" id="classTabs" hidden>
+  <button class="tab-btn" data-tab="erfassen">Erfassen</button>
   <button class="tab-btn" data-tab="auswertung">Auswertung</button>
-  <button class="tab-btn" data-tab="klasse">Klasse</button>
 </nav>
 
-<main id="view-erfassen"></main>
+<main id="view-home"></main>
+<main id="view-erfassen" hidden></main>
 <main id="view-auswertung" hidden></main>
-<main id="view-klasse" hidden></main>
+<main id="view-verwaltung" hidden></main>
 
 <div id="toast"></div>
 
@@ -220,10 +231,17 @@
       return (a.vorname||"").localeCompare(b.vorname||"", "de");
     });
   }
+  function sortClasses(list){
+    return [...list].sort((a,b)=>(a.name||"").localeCompare(b.name||"", "de"));
+  }
   function getClass(id){ return classes.find(c=>c.id===id); }
   function todayStr(){
     const d=new Date();
     return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function formatDateDE(iso){
+    const p=iso.split("-");
+    return p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : iso;
   }
   function toast(msg){
     const t=document.getElementById("toast");
@@ -232,58 +250,117 @@
     clearTimeout(toast._h);
     toast._h=setTimeout(()=>t.classList.remove("show"),1200);
   }
-
-  /* ---------- Header: class select + date ---------- */
-  const classSelect=document.getElementById("classSelect");
-  const dateInput=document.getElementById("dateInput");
-  dateInput.value=todayStr();
-
-  function renderClassSelect(){
-    classSelect.innerHTML="";
-    if(classes.length===0){
-      const o=document.createElement("option");
-      o.textContent="Keine Klasse — unter „Klasse“ anlegen";
-      o.value="";
-      classSelect.appendChild(o);
-      classSelect.disabled=true;
-      return;
-    }
-    classSelect.disabled=false;
-    classes.forEach(c=>{
-      const o=document.createElement("option");
-      o.value=c.id; o.textContent=c.name;
-      classSelect.appendChild(o);
-    });
-    let active=getActiveClassId();
-    if(!getClass(active)) active=classes[0].id;
-    classSelect.value=active;
-    setActiveClassId(active);
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
   }
-  classSelect.addEventListener("change", ()=>{
-    setActiveClassId(classSelect.value);
-    renderAll();
-  });
-  dateInput.addEventListener("change", ()=>{
-    if(!dateInput.value) dateInput.value=todayStr();
-    renderErfassen();
-  });
 
-  /* ---------- Tabs ---------- */
-  const tabBtns=document.querySelectorAll(".tab-btn");
+  /* Robuste Dateierkennung: erkennt UTF-8 (mit/ohne BOM) und fällt sonst auf Windows-1252
+     zurück, damit ö/ä/ü aus Excel-CSV-Exporten (oft nicht UTF-8) korrekt gelesen werden. */
+  function readFileSmart(file, callback){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const buf=new Uint8Array(reader.result);
+      let text;
+      if(buf.length>=3 && buf[0]===0xEF && buf[1]===0xBB && buf[2]===0xBF){
+        text=new TextDecoder("utf-8").decode(buf.slice(3));
+      } else {
+        try{ text=new TextDecoder("utf-8", {fatal:true}).decode(buf); }
+        catch(e){ text=new TextDecoder("windows-1252").decode(buf); }
+      }
+      callback(text);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  /* ---------- Navigation / Screens ---------- */
+  let screen="home";            // 'home' | 'class' | 'verwaltung'
+  let classSubTab="erfassen";   // 'erfassen' | 'auswertung' (nur im screen 'class')
+  let activeClassId=getActiveClassId();
+  let currentDate=todayStr();
+  let verwaltungClassId="";
+
+  const appHeader=document.getElementById("appHeader");
+  const classTabs=document.getElementById("classTabs");
   const views={
+    home:document.getElementById("view-home"),
     erfassen:document.getElementById("view-erfassen"),
     auswertung:document.getElementById("view-auswertung"),
-    klasse:document.getElementById("view-klasse")
+    verwaltung:document.getElementById("view-verwaltung")
   };
-  tabBtns.forEach(b=>{
+
+  classTabs.querySelectorAll(".tab-btn").forEach(b=>{
     b.addEventListener("click", ()=>{
-      tabBtns.forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-      Object.keys(views).forEach(k=>views[k].hidden = (k!==b.dataset.tab));
-      if(b.dataset.tab==="auswertung") renderAuswertung();
-      if(b.dataset.tab==="klasse") renderKlasse();
+      classSubTab=b.dataset.tab;
+      renderScreen();
     });
   });
+
+  function goHome(){ screen="home"; renderScreen(); }
+  function goClass(classId){
+    activeClassId=classId;
+    setActiveClassId(classId);
+    screen="class";
+    classSubTab="erfassen";
+    renderScreen();
+  }
+  function goVerwaltung(){ screen="verwaltung"; renderScreen(); }
+
+  function renderHeader(){
+    if(screen==="home"){
+      appHeader.innerHTML=`<h1>Mitarbeit</h1>`;
+    } else if(screen==="class"){
+      const cls=getClass(activeClassId);
+      appHeader.innerHTML=`<div class="header-row"><button class="back-btn" id="backBtn" aria-label="Zurück">←</button><h1>${escapeHtml(cls?cls.name:"")}</h1></div>`;
+      document.getElementById("backBtn").addEventListener("click", goHome);
+    } else if(screen==="verwaltung"){
+      appHeader.innerHTML=`<div class="header-row"><button class="back-btn" id="backBtn" aria-label="Zurück">←</button><h1>Verwaltung</h1></div>`;
+      document.getElementById("backBtn").addEventListener("click", goHome);
+    }
+  }
+
+  function renderScreen(){
+    views.home.hidden = screen!=="home";
+    views.erfassen.hidden = !(screen==="class" && classSubTab==="erfassen");
+    views.auswertung.hidden = !(screen==="class" && classSubTab==="auswertung");
+    views.verwaltung.hidden = screen!=="verwaltung";
+    classTabs.hidden = screen!=="class";
+    if(screen==="class"){
+      classTabs.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.tab===classSubTab));
+    }
+    renderHeader();
+    if(screen==="home") renderHome();
+    else if(screen==="class" && classSubTab==="erfassen") renderErfassen();
+    else if(screen==="class" && classSubTab==="auswertung") renderAuswertung();
+    else if(screen==="verwaltung") renderVerwaltung();
+  }
+
+  function renderHome(){
+    const el=views.home;
+    el.innerHTML="";
+    if(classes.length===0){
+      el.innerHTML=`<div class="empty">Noch keine Klasse angelegt.<br>Unter „Verwaltung“ eine CSV importieren oder eine Klasse anlegen.</div>`;
+    } else {
+      const intro=document.createElement("div");
+      intro.className="home-intro";
+      intro.textContent="Klasse wählen:";
+      el.appendChild(intro);
+      const list=document.createElement("div");
+      list.className="home-list";
+      sortClasses(classes).forEach(c=>{
+        const b=document.createElement("button");
+        b.className="class-select-btn";
+        b.innerHTML=`<span class="cn-name">${escapeHtml(c.name)}</span><span class="cn-count">${c.students.length} Schüler</span>`;
+        b.addEventListener("click", ()=>goClass(c.id));
+        list.appendChild(b);
+      });
+      el.appendChild(list);
+    }
+    const vBtn=document.createElement("button");
+    vBtn.className="verwaltung-btn";
+    vBtn.innerHTML=`<span>⚙</span><span>Verwaltung</span>`;
+    vBtn.addEventListener("click", goVerwaltung);
+    el.appendChild(vBtn);
+  }
 
   /* ---------- Erfassen ---------- */
   function getRecord(classId, date, studentId){
@@ -299,26 +376,36 @@
 
   function renderErfassen(){
     const el=views.erfassen;
-    const classId=getActiveClassId();
-    const cls=getClass(classId);
+    const cls=getClass(activeClassId);
     el.innerHTML="";
-    if(!cls){
-      el.innerHTML=`<div class="empty">Noch keine Klasse angelegt.<br>Unter „Klasse“ eine CSV importieren oder Schüler anlegen.</div>`;
-      return;
-    }
+    if(!cls){ goHome(); return; }
+
+    const dateRow=document.createElement("div");
+    dateRow.className="date-row";
+    dateRow.innerHTML=`<input type="date" id="dateInput" value="${currentDate}">`;
+    el.appendChild(dateRow);
+    dateRow.querySelector("#dateInput").addEventListener("change", (e)=>{
+      currentDate = e.target.value || todayStr();
+      renderErfassen();
+    });
+
     if(cls.students.length===0){
-      el.innerHTML=`<div class="empty">Diese Klasse hat noch keine Schüler.<br>Unter „Klasse“ importieren oder hinzufügen.</div>`;
+      const empty=document.createElement("div");
+      empty.className="empty";
+      empty.innerHTML=`Diese Klasse hat noch keine Schüler.<br>Unter „Verwaltung“ importieren oder hinzufügen.`;
+      el.appendChild(empty);
       return;
     }
-    const date=dateInput.value || todayStr();
-    const sorted=sortStudents(cls.students);
 
     const summary=document.createElement("div");
     summary.className="date-summary";
     el.appendChild(summary);
 
+    const date=currentDate;
+    const sorted=sortStudents(cls.students);
+
     sorted.forEach((s,i)=>{
-      const rec=getRecord(classId, date, s.id);
+      const rec=getRecord(activeClassId, date, s.id);
       const row=document.createElement("div");
       row.className="student-row";
 
@@ -334,7 +421,7 @@
       haBtn.className="ha-btn"+(rec.ha?" active":"");
       haBtn.textContent = rec.ha ? "✓ HA fehlt" : "HA fehlt";
       haBtn.addEventListener("click", ()=>{
-        setRecord(classId, date, s.id, {ha:!rec.ha});
+        setRecord(activeClassId, date, s.id, {ha:!rec.ha});
         toast("Gespeichert");
         renderErfassen();
       });
@@ -348,7 +435,7 @@
         b.dataset.s=st.code;
         b.textContent=st.label;
         b.addEventListener("click", ()=>{
-          setRecord(classId, date, s.id, {status:st.code});
+          setRecord(activeClassId, date, s.id, {status:st.code});
           toast("Gespeichert");
           renderErfassen();
         });
@@ -360,13 +447,9 @@
     });
 
     const total=sorted.length;
-    const absent=sorted.filter(s=>getRecord(classId,date,s.id).status==="abwesend").length;
-    const haMiss=sorted.filter(s=>getRecord(classId,date,s.id).ha).length;
+    const absent=sorted.filter(s=>getRecord(activeClassId,date,s.id).status==="abwesend").length;
+    const haMiss=sorted.filter(s=>getRecord(activeClassId,date,s.id).ha).length;
     summary.textContent=`${total} Schüler · ${absent} abwesend · ${haMiss} HA fehlt`;
-  }
-
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
   }
 
   /* ---------- Auswertung ---------- */
@@ -393,49 +476,19 @@
       });
       const attendancePct = sessions>0 ? ((sessions-absent)/sessions*100) : null;
       const quotient = bewerteteStunden>0 ? (sumValues/bewerteteStunden) : null;
-      return {
-        student:s, sessions, absent, haFehlt, sumValues, bewerteteStunden,
-        attendancePct, quotient
-      };
+      return { student:s, sessions, absent, haFehlt, sumValues, bewerteteStunden, attendancePct, quotient };
     });
   }
 
   function fmtPct(v){ return v===null ? "–" : v.toFixed(1).replace(".",",")+" %"; }
   function fmtNum(v){ return v===null ? "–" : (Number.isInteger(v)? v : v.toFixed(2).replace(".",",")); }
 
-  function formatDateDE(iso){
-    const p=iso.split("-");
-    return p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : iso;
-  }
-
-  // Long-format Zeitreihe: ein Eintrag pro Schüler und erfasstem Datum, inkl. HA-fehlt-Flag
-  function buildLongRows(classId, fromDate, toDate){
-    const cls=getClass(classId);
-    if(!cls) return [];
-    const classRecords=records[classId] || {};
-    let dates=Object.keys(classRecords);
-    if(fromDate) dates=dates.filter(d=>d>=fromDate);
-    if(toDate) dates=dates.filter(d=>d<=toDate);
-    dates.sort();
-    const rows=[];
-    sortStudents(cls.students).forEach(s=>{
-      dates.forEach(date=>{
-        const rec=classRecords[date] && classRecords[date][s.id];
-        if(!rec) return;
-        const statusLabel=(STATES.find(st=>st.code===rec.status)||{}).label || rec.status;
-        const value=Object.prototype.hasOwnProperty.call(VALUE_OF, rec.status) ? VALUE_OF[rec.status] : "";
-        rows.push({nachname:s.nachname, vorname:s.vorname, date, statusLabel, value, ha:rec.ha?"Ja":"Nein"});
-      });
-    });
-    return rows;
-  }
-
   function renderAuswertung(){
     const el=views.auswertung;
-    const classId=getActiveClassId();
-    const cls=getClass(classId);
+    const cls=getClass(activeClassId);
     el.innerHTML="";
-    if(!cls || cls.students.length===0){
+    if(!cls){ goHome(); return; }
+    if(cls.students.length===0){
       el.innerHTML=`<div class="empty">Keine Daten vorhanden.</div>`;
       return;
     }
@@ -450,7 +503,7 @@
 
     const exportBtn=document.createElement("button");
     exportBtn.className="export-btn";
-    exportBtn.textContent="Als CSV exportieren";
+    exportBtn.textContent="Als Excel exportieren (.xlsx)";
     el.appendChild(exportBtn);
 
     const listWrap=document.createElement("div");
@@ -459,7 +512,7 @@
     function refresh(){
       const from=document.getElementById("fromDate").value;
       const to=document.getElementById("toDate").value;
-      const stats=computeStats(classId, from, to);
+      const stats=computeStats(activeClassId, from, to);
       listWrap.innerHTML="";
       if(stats.every(st=>st.sessions===0)){
         listWrap.innerHTML=`<div class="empty">Für den gewählten Zeitraum liegen noch keine Einträge vor.</div>`;
@@ -479,8 +532,10 @@
         listWrap.appendChild(card);
       });
       exportBtn.onclick=()=>{
-        const longRows=buildLongRows(classId, from, to);
-        exportAuswertung(cls, stats, longRows, from, to);
+        const bytes=buildAuswertungWorkbook(activeClassId, from, to);
+        const rangeTag=(from||to) ? `_${from||"anfang"}_bis_${to||"heute"}` : "";
+        downloadXlsx(bytes, `Auswertung_${cls.name.replace(/\s+/g,"_")}${rangeTag}.xlsx`);
+        toast("Excel-Datei exportiert");
       };
     }
     document.getElementById("fromDate").addEventListener("change", refresh);
@@ -488,34 +543,199 @@
     refresh();
   }
 
-  function esc(v){ const s=String(v); return s.includes(";")||s.includes('"') ? `"${s.replace(/"/g,'""')}"` : s; }
+  /* ---------- XLSX-Erzeugung (reines JavaScript, keine externen Bibliotheken, offline-fähig) ---------- */
+  function makeCRCTable(){
+    const table=[];
+    for(let n=0;n<256;n++){
+      let c=n;
+      for(let k=0;k<8;k++){ c=(c&1) ? (0xEDB88320 ^ (c>>>1)) : (c>>>1); }
+      table[n]=c>>>0;
+    }
+    return table;
+  }
+  const CRC_TABLE=makeCRCTable();
+  function crc32(bytes){
+    let crc=0 ^ (-1);
+    for(let i=0;i<bytes.length;i++){ crc=(crc>>>8) ^ CRC_TABLE[(crc ^ bytes[i]) & 0xFF]; }
+    return (crc ^ (-1)) >>> 0;
+  }
+  function u16(v){ return new Uint8Array([v&0xFF,(v>>>8)&0xFF]); }
+  function u32(v){ return new Uint8Array([v&0xFF,(v>>>8)&0xFF,(v>>>16)&0xFF,(v>>>24)&0xFF]); }
+  function concatBytes(arrays){
+    let total=0; arrays.forEach(a=>total+=a.length);
+    const out=new Uint8Array(total); let off=0;
+    arrays.forEach(a=>{ out.set(a,off); off+=a.length; });
+    return out;
+  }
+  function dosDateTime(date){
+    const time=((date.getHours()&0x1F)<<11) | ((date.getMinutes()&0x3F)<<5) | ((Math.floor(date.getSeconds()/2))&0x1F);
+    const d=(((date.getFullYear()-1980)&0x7F)<<9) | (((date.getMonth()+1)&0xF)<<5) | (date.getDate()&0x1F);
+    return {time, d};
+  }
+  function buildZip(files){
+    const {time,d:date}=dosDateTime(new Date());
+    let offset=0;
+    const localParts=[], centralParts=[];
+    files.forEach(f=>{
+      const nameBytes=new TextEncoder().encode(f.name);
+      const data=f.data;
+      const crc=crc32(data);
+      const localHeader=concatBytes([
+        u32(0x04034b50), u16(20), u16(0), u16(0), u16(time), u16(date),
+        u32(crc), u32(data.length), u32(data.length), u16(nameBytes.length), u16(0)
+      ]);
+      const localEntry=concatBytes([localHeader, nameBytes, data]);
+      localParts.push(localEntry);
+      const centralHeader=concatBytes([
+        u32(0x02014b50), u16(20), u16(20), u16(0), u16(0), u16(time), u16(date),
+        u32(crc), u32(data.length), u32(data.length), u16(nameBytes.length), u16(0), u16(0),
+        u16(0), u16(0), u32(0), u32(offset)
+      ]);
+      centralParts.push(concatBytes([centralHeader, nameBytes]));
+      offset+=localEntry.length;
+    });
+    const localBytes=concatBytes(localParts);
+    const centralBytes=concatBytes(centralParts);
+    const eocd=concatBytes([
+      u32(0x06054b50), u16(0), u16(0), u16(files.length), u16(files.length),
+      u32(centralBytes.length), u32(localBytes.length), u16(0)
+    ]);
+    return concatBytes([localBytes, centralBytes, eocd]);
+  }
+  function xmlEscape(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+  }
+  function colName(n){
+    let s=""; n=n+1;
+    while(n>0){ const rem=(n-1)%26; s=String.fromCharCode(65+rem)+s; n=Math.floor((n-1)/26); }
+    return s;
+  }
+  function cellXml(rowIdx, colIdx, value){
+    const ref=colName(colIdx)+(rowIdx+1);
+    if(value===null || value===undefined || value==="") return "";
+    if(typeof value==="number" && isFinite(value)) return `<c r="${ref}"><v>${value}</v></c>`;
+    return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlEscape(value)}</t></is></c>`;
+  }
+  function sheetXml(rows){
+    const rowsXml=rows.map((row,ri)=>{
+      const cells=row.map((val,ci)=>cellXml(ri,ci,val)).join("");
+      return `<row r="${ri+1}">${cells}</row>`;
+    }).join("");
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rowsXml}</sheetData></worksheet>`;
+  }
+  function buildXlsx(sheets){
+    const encoder=new TextEncoder();
+    const contentTypes=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("\n")}
+</Types>`;
+    const rootRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+    const workbookRels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join("\n")}
+<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+    const workbookXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets>
+${sheets.map((s,i)=>`<sheet name="${xmlEscape(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join("\n")}
+</sheets>
+</workbook>`;
+    const stylesXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts>
+<fills count="1"><fill><patternFill patternType="none"/></fill></fills>
+<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+<cellXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/></cellXfs>
+<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`;
+    const files=[
+      {name:"[Content_Types].xml", data:encoder.encode(contentTypes)},
+      {name:"_rels/.rels", data:encoder.encode(rootRels)},
+      {name:"xl/workbook.xml", data:encoder.encode(workbookXml)},
+      {name:"xl/_rels/workbook.xml.rels", data:encoder.encode(workbookRels)},
+      {name:"xl/styles.xml", data:encoder.encode(stylesXml)},
+    ];
+    sheets.forEach((s,i)=>files.push({name:`xl/worksheets/sheet${i+1}.xml`, data:encoder.encode(sheetXml(s.rows))}));
+    return buildZip(files);
+  }
 
-  function buildCombinedCsv(stats, longRows){
-    const lines=[];
-    lines.push("Zusammenfassung");
-    lines.push(["Nachname","Vorname","Anwesenheit_Prozent","Fehlende_HA","Summe_Mitarbeitswerte","Bewertete_Stunden","Quotient"].map(esc).join(";"));
+  /* ---------- Auswertungs-Arbeitsmappe (3 Tabellenblätter) ---------- */
+  function buildSummaryRows(stats){
+    const rows=[["Nachname","Vorname","Anwesenheit_%","Fehlende_HA","Summe_Mitarbeitswerte","Bewertete_Stunden","Quotient"]];
     stats.forEach(st=>{
-      lines.push([
+      rows.push([
         st.student.nachname,
         st.student.vorname,
-        st.attendancePct===null?"":st.attendancePct.toFixed(1).replace(".",","),
+        st.attendancePct===null ? "" : Math.round(st.attendancePct*10)/10,
         st.haFehlt,
         st.sumValues,
         st.bewerteteStunden,
-        st.quotient===null?"":st.quotient.toFixed(2).replace(".",",")
-      ].map(esc).join(";"));
+        st.quotient===null ? "" : Math.round(st.quotient*100)/100
+      ]);
     });
-    lines.push("");
-    lines.push("Zeitreihe (ein Eintrag je Schüler und erfasstem Tag)");
-    lines.push(["Nachname","Vorname","Datum","Status","Mitarbeitswert","HA_fehlt"].map(esc).join(";"));
-    longRows.forEach(r=>{
-      lines.push([r.nachname, r.vorname, formatDateDE(r.date), r.statusLabel, r.value, r.ha].map(esc).join(";"));
-    });
-    return "\uFEFF"+lines.join("\r\n");
+    return rows;
   }
-
-  function downloadCsv(csvText, filename){
-    const blob=new Blob([csvText], {type:"text/csv;charset=utf-8;"});
+  function relevantDates(classId, fromDate, toDate){
+    const classRecords=records[classId] || {};
+    let dates=Object.keys(classRecords);
+    if(fromDate) dates=dates.filter(d=>d>=fromDate);
+    if(toDate) dates=dates.filter(d=>d<=toDate);
+    dates.sort();
+    return dates;
+  }
+  function buildMatrixRows(classId, fromDate, toDate){
+    const cls=getClass(classId);
+    const classRecords=records[classId] || {};
+    const dates=relevantDates(classId, fromDate, toDate);
+    const rows=[["Nachname","Vorname", ...dates.map(formatDateDE)]];
+    sortStudents(cls.students).forEach(s=>{
+      const row=[s.nachname, s.vorname];
+      dates.forEach(date=>{
+        const rec=classRecords[date] && classRecords[date][s.id];
+        if(!rec){ row.push("/"); return; }
+        if(rec.status==="abwesend"){ row.push("a"); return; }
+        if(Object.prototype.hasOwnProperty.call(VALUE_OF, rec.status)){ row.push(VALUE_OF[rec.status]); return; }
+        row.push("/");
+      });
+      rows.push(row);
+    });
+    return rows;
+  }
+  function buildHaListRows(classId, fromDate, toDate){
+    const cls=getClass(classId);
+    const classRecords=records[classId] || {};
+    const dates=relevantDates(classId, fromDate, toDate);
+    const rows=[["Nachname","Vorname","Fehlende HA-Termine"]];
+    sortStudents(cls.students).forEach(s=>{
+      const missing=[];
+      dates.forEach(date=>{
+        const rec=classRecords[date] && classRecords[date][s.id];
+        if(rec && rec.ha) missing.push(formatDateDE(date));
+      });
+      rows.push([s.nachname, s.vorname, missing.join(", ")]);
+    });
+    return rows;
+  }
+  function buildAuswertungWorkbook(classId, fromDate, toDate){
+    const stats=computeStats(classId, fromDate, toDate);
+    const sheets=[
+      {name:"Zusammenfassung", rows: buildSummaryRows(stats)},
+      {name:"Zeitreihe Mitarbeit", rows: buildMatrixRows(classId, fromDate, toDate)},
+      {name:"Fehlende HA", rows: buildHaListRows(classId, fromDate, toDate)}
+    ];
+    return buildXlsx(sheets);
+  }
+  function downloadXlsx(bytes, filename){
+    const blob=new Blob([bytes], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
     a.href=url; a.download=filename;
@@ -523,13 +743,7 @@
     URL.revokeObjectURL(url);
   }
 
-  function exportAuswertung(cls, stats, longRows, from, to){
-    const rangeTag=(from||to) ? `_${from||"anfang"}_bis_${to||"heute"}` : "";
-    downloadCsv(buildCombinedCsv(stats, longRows), `Auswertung_${cls.name.replace(/\s+/g,"_")}${rangeTag}.csv`);
-    toast("CSV exportiert");
-  }
-
-  /* ---------- Klasse verwalten ---------- */
+  /* ---------- CSV-Import für Schülerlisten ---------- */
   function parseCsv(text){
     const delim = text.split("\n")[0].includes(";") ? ";" : ",";
     const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
@@ -556,8 +770,9 @@
     return out;
   }
 
-  function renderKlasse(){
-    const el=views.klasse;
+  /* ---------- Verwaltung ---------- */
+  function renderVerwaltung(){
+    const el=views.verwaltung;
     el.innerHTML="";
 
     // Datensicherung (Backup)
@@ -590,21 +805,21 @@
       reader.onload=()=>{
         let data;
         try{ data=JSON.parse(String(reader.result)); }
-        catch(err){ toast("Datei ist kein gültiges Backup"); return; }
+        catch(err){ toast("Datei ist kein gültiges Backup"); e.target.value=""; return; }
         if(!data || !Array.isArray(data.classes) || typeof data.records!=="object"){
-          toast("Datei ist kein gültiges Backup"); return;
+          toast("Datei ist kein gültiges Backup"); e.target.value=""; return;
         }
         if(!confirm("Backup importieren? Der komplette aktuelle Datenstand (alle Klassen und Einträge) wird dabei überschrieben.")) { e.target.value=""; return; }
         classes=data.classes;
         records=data.records || {};
         saveClasses(classes);
         saveRecords(records);
-        setActiveClassId(classes.length ? classes[0].id : "");
+        activeClassId="";
+        setActiveClassId("");
+        verwaltungClassId="";
         e.target.value="";
         toast("Backup importiert");
-        renderClassSelect();
-        renderAll();
-        renderKlasse();
+        renderVerwaltung();
       };
       reader.readAsText(file, "UTF-8");
     });
@@ -623,7 +838,7 @@
         <input type="file" id="csvFile" accept=".csv,text/csv">
       </div>
       <button class="btn" id="importBtn">Importieren</button>
-      <div class="hint">Erste Zeile darf eine Kopfzeile mit „Nachname“/„Vorname“ sein. Trennzeichen Komma oder Semikolon werden erkannt.</div>
+      <div class="hint">Erste Zeile darf eine Kopfzeile mit „Nachname“/„Vorname“ sein. Trennzeichen Komma oder Semikolon werden erkannt, Zeichensatz (UTF-8 oder Windows-1252) wird automatisch erkannt.</div>
     `;
     el.appendChild(importBlock);
     importBlock.querySelector("#importBtn").addEventListener("click", ()=>{
@@ -631,19 +846,16 @@
       const fileInput=importBlock.querySelector("#csvFile");
       if(!name){ toast("Bitte Klassennamen eingeben"); return; }
       if(!fileInput.files[0]){ toast("Bitte CSV-Datei wählen"); return; }
-      const reader=new FileReader();
-      reader.onload=()=>{
-        const students=parseCsv(String(reader.result));
+      readFileSmart(fileInput.files[0], (text)=>{
+        const students=parseCsv(text);
         if(students.length===0){ toast("Keine Schüler gefunden"); return; }
         const newClass={id:uid(), name, students};
         classes.push(newClass);
         saveClasses(classes);
-        setActiveClassId(newClass.id);
+        verwaltungClassId=newClass.id;
         toast(`${students.length} Schüler importiert`);
-        renderClassSelect();
-        renderAll();
-      };
-      reader.readAsText(fileInput.files[0], "UTF-8");
+        renderVerwaltung();
+      });
     });
 
     // Bestehende Klassen
@@ -653,7 +865,7 @@
     if(classes.length===0){
       listBlock.innerHTML+=`<div class="hint">Noch keine Klasse angelegt.</div>`;
     } else {
-      classes.forEach(c=>{
+      sortClasses(classes).forEach(c=>{
         const item=document.createElement("div");
         item.className="class-item";
         item.innerHTML=`
@@ -672,36 +884,39 @@
             saveClasses(classes);
             delete records[c.id];
             saveRecords(records);
-            if(getActiveClassId()===c.id) setActiveClassId(classes.length? classes[0].id : "");
-            renderClassSelect();
-            renderAll();
-            renderKlasse();
+            if(activeClassId===c.id){ activeClassId=""; setActiveClassId(""); }
+            if(verwaltungClassId===c.id) verwaltungClassId="";
+            renderVerwaltung();
           }
         });
         item.querySelector('[data-action="semester"]').addEventListener("click", ()=>{
-          if(!confirm(`Semester für „${c.name}“ abschließen?\n\nAlle bisher erfassten Mitarbeit- und Hausaufgaben-Einträge dieser Klasse werden zunächst als CSV exportiert und danach unwiderruflich gelöscht. Die Schülerliste bleibt erhalten. Fortfahren?`)) return;
+          if(!confirm(`Semester für „${c.name}“ abschließen?\n\nAlle bisher erfassten Mitarbeit- und Hausaufgaben-Einträge dieser Klasse werden zunächst als Excel-Datei exportiert und danach unwiderruflich gelöscht. Die Schülerliste bleibt erhalten. Fortfahren?`)) return;
           if(!confirm(`Letzte Bestätigung: Einträge von „${c.name}“ jetzt exportieren und anschließend endgültig löschen?`)) return;
-          const stats=computeStats(c.id, "", "");
-          const longRows=buildLongRows(c.id, "", "");
-          downloadCsv(buildCombinedCsv(stats, longRows), `Semesterabschluss_${c.name.replace(/\s+/g,"_")}_${todayStr()}.csv`);
+          const bytes=buildAuswertungWorkbook(c.id, "", "");
+          downloadXlsx(bytes, `Semesterabschluss_${c.name.replace(/\s+/g,"_")}_${todayStr()}.xlsx`);
           records[c.id]={};
           saveRecords(records);
           toast("Semester abgeschlossen — Daten exportiert und geleert");
-          renderKlasse();
-          renderAll();
+          renderVerwaltung();
         });
         listBlock.appendChild(item);
       });
     }
     el.appendChild(listBlock);
 
-    // Schüler manuell verwalten (aktive Klasse)
-    const activeCls=getClass(getActiveClassId());
-    if(activeCls){
+    // Schüler manuell verwalten — eigene, unabhängige Klassenauswahl
+    if(classes.length>0){
+      if(!verwaltungClassId || !getClass(verwaltungClassId)){
+        verwaltungClassId=sortClasses(classes)[0].id;
+      }
       const manageBlock=document.createElement("section");
       manageBlock.className="block";
       manageBlock.innerHTML=`
-        <h2>Schüler in „${escapeHtml(activeCls.name)}“ verwalten</h2>
+        <h2>Schüler verwalten</h2>
+        <div class="field">
+          <label>Klasse</label>
+          <select id="manageClassSelect"></select>
+        </div>
         <div class="field">
           <label>Nachname</label>
           <input type="text" id="addNachname">
@@ -714,6 +929,20 @@
         <div class="student-list-mini" id="miniList"></div>
       `;
       el.appendChild(manageBlock);
+
+      const select=manageBlock.querySelector("#manageClassSelect");
+      sortClasses(classes).forEach(c=>{
+        const o=document.createElement("option");
+        o.value=c.id; o.textContent=c.name;
+        select.appendChild(o);
+      });
+      select.value=verwaltungClassId;
+      select.addEventListener("change", ()=>{
+        verwaltungClassId=select.value;
+        renderVerwaltung();
+      });
+
+      const activeCls=getClass(verwaltungClassId);
       const miniList=manageBlock.querySelector("#miniList");
       sortStudents(activeCls.students).forEach(s=>{
         const row=document.createElement("div");
@@ -725,8 +954,7 @@
           if(confirm(`${s.nachname}, ${s.vorname} aus der Klasse entfernen? (Bereits erfasste Daten bleiben gespeichert, tauchen aber nicht mehr auf.)`)){
             activeCls.students=activeCls.students.filter(x=>x.id!==s.id);
             saveClasses(classes);
-            renderKlasse();
-            renderAll();
+            renderVerwaltung();
           }
         });
         row.appendChild(del);
@@ -739,18 +967,13 @@
         activeCls.students.push({id:uid(), nachname:nach, vorname:vor});
         saveClasses(classes);
         toast("Schüler hinzugefügt");
-        renderKlasse();
-        renderAll();
+        renderVerwaltung();
       });
     }
   }
 
   /* ---------- Init ---------- */
-  function renderAll(){
-    renderErfassen();
-  }
-  renderClassSelect();
-  renderAll();
+  renderScreen();
 
 })();
 </script>
