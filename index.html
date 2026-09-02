@@ -189,9 +189,20 @@
   "use strict";
 
   /* ---------- PWA: Service Worker registrieren (nur über http/https, nicht bei file://) ---------- */
+  const APP_VERSION="1.1.0"; // zusammen mit derselben Nummer in sw.js hochzählen
   if("serviceWorker" in navigator && (location.protocol==="https:" || location.protocol==="http:")){
     window.addEventListener("load", ()=>{
-      navigator.serviceWorker.register("sw.js").catch(()=>{ /* offline nutzbar auch ohne SW */ });
+      navigator.serviceWorker.register("sw.js").then((reg)=>{
+        reg.update().catch(()=>{}); // beim Öffnen aktiv nach einer neueren Version fragen
+      }).catch(()=>{ /* offline nutzbar auch ohne SW */ });
+    });
+    // Sobald ein neuer Service Worker die Kontrolle übernimmt (= neue Version aktiv),
+    // die Seite einmal automatisch neu laden, damit die frischen Dateien greifen.
+    let swRefreshing=false;
+    navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+      if(swRefreshing) return;
+      swRefreshing=true;
+      window.location.reload();
     });
   }
 
@@ -970,6 +981,13 @@ ${sheets.map((s,i)=>`<sheet name="${xmlEscape(s.name)}" sheetId="${i+1}" r:id="r
         renderVerwaltung();
       });
     }
+
+    const versionInfo=document.createElement("div");
+    versionInfo.className="hint";
+    versionInfo.style.textAlign="center";
+    versionInfo.style.marginTop="4px";
+    versionInfo.textContent=`App-Version ${APP_VERSION}`;
+    el.appendChild(versionInfo);
   }
 
   /* ---------- Init ---------- */
