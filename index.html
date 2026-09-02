@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Mitarbeit</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#1C2621">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Mitarbeit">
+<style>
+  :root{
+    --bg:#F4F5F2;
+    --surface:#FFFFFF;
+    --ink:#1C2621;
+    --ink-soft:#5B655F;
+    --border:#DBE0DB;
+    --accent:#2F6E5B;
+    --accent-soft:#E3EEE8;
+    --amber:#C97A2B;
+    --amber-soft:#F6E7D6;
+    --rust:#B5533C;
+    --rust-soft:#F5E1DB;
+    --slate:#5B6B78;
+    --slate-soft:#E5E9EB;
+    --radius:8px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:72px;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-variant-numeric:tabular-nums;}
+
+  header{
+    position:sticky; top:0; z-index:10;
+    background:var(--ink); color:#fff;
+    padding:14px 16px 12px;
+  }
+  header h1{
+    margin:0 0 10px; font-size:1.15rem; font-weight:700; letter-spacing:.2px;
+  }
+  .header-row{display:flex; gap:8px;}
+  select, input[type=date], input[type=text]{
+    font-family:inherit; font-size:0.95rem;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08); color:#fff;
+    border-radius:var(--radius); padding:9px 10px;
+  }
+  select{flex:1; min-width:0;}
+  select option{color:#111;}
+  input[type=date]{color-scheme:dark; flex-shrink:0;}
+
+  nav.tabs{
+    display:flex; background:var(--surface); border-bottom:1px solid var(--border);
+    position:sticky; top:64px; z-index:9;
+  }
+  nav.tabs button{
+    flex:1; padding:11px 4px; background:none; border:none; border-bottom:3px solid transparent;
+    font-size:0.85rem; font-weight:600; color:var(--ink-soft); font-family:inherit;
+  }
+  nav.tabs button.active{color:var(--accent); border-bottom-color:var(--accent);}
+
+  main{padding:10px 14px 24px; max-width:640px; margin:0 auto;}
+  main[hidden]{display:none;}
+
+  .empty{
+    text-align:center; color:var(--ink-soft); padding:40px 20px; font-size:0.95rem; line-height:1.5;
+  }
+
+  /* Erfassen */
+  .student-row{padding:14px 2px; border-bottom:1px solid var(--border);}
+  .student-name{font-weight:700; font-size:1rem; margin-bottom:10px;}
+  .student-name .num{color:var(--ink-soft); font-weight:500; margin-right:6px;}
+  .row-controls{display:flex; flex-direction:column; gap:8px;}
+  .state-grid{display:flex; flex-wrap:wrap; gap:6px;}
+  .state-btn{
+    font-family:inherit; font-size:0.86rem; font-weight:600;
+    padding:9px 4px; min-width:52px; flex:1 1 auto; text-align:center;
+    border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); color:var(--ink);
+  }
+  .state-btn[data-s="abwesend"]{flex-basis:100%;}
+  .state-btn.active[data-s="abwesend"]{background:var(--slate); border-color:var(--slate); color:#fff;}
+  .state-btn.active[data-s="ppp"]{background:#2F6E5B; border-color:#2F6E5B; color:#fff;}
+  .state-btn.active[data-s="pp"]{background:#4C8C74; border-color:#4C8C74; color:#fff;}
+  .state-btn.active[data-s="p"]{background:#8FBBA5; border-color:#8FBBA5; color:#1C2621;}
+  .state-btn.active[data-s="0"]{background:var(--slate-soft); border-color:var(--slate); color:var(--ink);}
+  .state-btn.active[data-s="m"]{background:var(--rust); border-color:var(--rust); color:#fff;}
+  .state-btn.active[data-s="none"]{background:var(--border); border-color:var(--border); color:var(--ink-soft);}
+  .ha-btn{
+    font-family:inherit; font-size:0.86rem; font-weight:600; padding:8px 10px;
+    border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); color:var(--ink-soft);
+    align-self:flex-start;
+  }
+  .ha-btn.active{background:var(--amber-soft); border-color:var(--amber); color:var(--amber);}
+
+  .date-summary{font-size:0.82rem; color:var(--ink-soft); padding:6px 2px 4px;}
+
+  /* Auswertung */
+  .filter-row{display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
+  .filter-row label{font-size:0.8rem; color:var(--ink-soft); display:flex; flex-direction:column; gap:3px;}
+  .filter-row input[type=date]{color-scheme:light; border:1px solid var(--border); background:var(--surface); color:var(--ink);}
+  .stat-card{
+    border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:10px; background:var(--surface);
+  }
+  .stat-card .name{font-weight:700; margin-bottom:8px;}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:6px 14px; font-size:0.87rem;}
+  .stat-grid .label{color:var(--ink-soft);}
+  .stat-grid .val{text-align:right; font-weight:600;}
+  .export-btn{
+    width:100%; padding:12px; border-radius:var(--radius); border:1px solid var(--accent);
+    background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:0.95rem; font-family:inherit; margin-bottom:16px;
+  }
+
+  /* Klasse */
+  section.block{border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px; background:var(--surface);}
+  section.block h2{font-size:0.95rem; margin:0 0 10px;}
+  .field{display:flex; flex-direction:column; gap:5px; margin-bottom:10px;}
+  .field label{font-size:0.8rem; color:var(--ink-soft);}
+  .field input, .field select{
+    border:1px solid var(--border); border-radius:var(--radius); padding:10px; font-size:0.95rem; font-family:inherit; background:var(--bg); color:var(--ink);
+  }
+  .btn{
+    padding:11px; border-radius:var(--radius); border:1px solid var(--accent); background:var(--accent); color:#fff;
+    font-weight:700; font-size:0.9rem; font-family:inherit; width:100%;
+  }
+  .btn.secondary{background:var(--surface); color:var(--ink); border-color:var(--border);}
+  .class-item{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); gap:8px;}
+  .class-item:last-child{border-bottom:none;}
+  .class-item .cname{font-weight:600;}
+  .class-item .ccount{font-size:0.8rem; color:var(--ink-soft);}
+  .icon-btn{background:none; border:none; color:var(--rust); font-size:0.85rem; font-family:inherit; font-weight:600; padding:6px;}
+  .icon-btn.semester{color:var(--accent);}
+  .class-actions{display:flex; flex-direction:column; align-items:flex-end; gap:2px;}
+  .hint{font-size:0.78rem; color:var(--ink-soft); line-height:1.5; margin-top:2px;}
+  .student-list-mini{margin-top:10px;}
+  .student-list-mini .sm-row{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); font-size:0.88rem;}
+  .student-list-mini .sm-row:last-child{border-bottom:none;}
+
+  #toast{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:10px 18px; border-radius:20px; font-size:0.85rem;
+    opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:50;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mitarbeit</h1>
+  <div class="header-row">
+    <select id="classSelect"></select>
+    <input type="date" id="dateInput">
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="erfassen">Erfassen</button>
+  <button class="tab-btn" data-tab="auswertung">Auswertung</button>
+  <button class="tab-btn" data-tab="klasse">Klasse</button>
+</nav>
+
+<main id="view-erfassen"></main>
+<main id="view-auswertung" hidden></main>
+<main id="view-klasse" hidden></main>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- PWA: Service Worker registrieren (nur über http/https, nicht bei file://) ---------- */
+  if("serviceWorker" in navigator && (location.protocol==="https:" || location.protocol==="http:")){
+    window.addEventListener("load", ()=>{
+      navigator.serviceWorker.register("sw.js").catch(()=>{ /* offline nutzbar auch ohne SW */ });
+    });
+  }
+
+  /* ---------- Storage ---------- */
+  const LS_CLASSES = "mmt_classes";
+  const LS_RECORDS = "mmt_records";
+  const LS_ACTIVE = "mmt_active_class";
+
+  function loadClasses(){ try{ return JSON.parse(localStorage.getItem(LS_CLASSES)) || []; }catch(e){ return []; } }
+  function saveClasses(c){ localStorage.setItem(LS_CLASSES, JSON.stringify(c)); }
+  function loadRecords(){ try{ return JSON.parse(localStorage.getItem(LS_RECORDS)) || {}; }catch(e){ return {}; } }
+  function saveRecords(r){ localStorage.setItem(LS_RECORDS, JSON.stringify(r)); }
+  function getActiveClassId(){ return localStorage.getItem(LS_ACTIVE) || ""; }
+  function setActiveClassId(id){ localStorage.setItem(LS_ACTIVE, id); }
+
+  function uid(){ return (crypto.randomUUID ? crypto.randomUUID() : "id-"+Date.now()+"-"+Math.random().toString(16).slice(2)); }
+
+  let classes = loadClasses();
+  let records = loadRecords();
+
+  const STATES = [
+    {code:"abwesend", label:"Abwesend"},
+    {code:"ppp", label:"+++"},
+    {code:"pp", label:"++"},
+    {code:"p", label:"+"},
+    {code:"0", label:"0"},
+    {code:"m", label:"−"},
+    {code:"none", label:"ohne Bewertung"}
+  ];
+  const VALUE_OF = {ppp:3, pp:2, p:1, "0":0, m:-1};
+
+  /* ---------- Helpers ---------- */
+  function sortStudents(list){
+    return [...list].sort((a,b)=>{
+      const an=(a.nachname||"").localeCompare(b.nachname||"", "de");
+      if(an!==0) return an;
+      return (a.vorname||"").localeCompare(b.vorname||"", "de");
+    });
+  }
+  function getClass(id){ return classes.find(c=>c.id===id); }
+  function todayStr(){
+    const d=new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function toast(msg){
+    const t=document.getElementById("toast");
+    t.textContent=msg;
+    t.classList.add("show");
+    clearTimeout(toast._h);
+    toast._h=setTimeout(()=>t.classList.remove("show"),1200);
+  }
+
+  /* ---------- Header: class select + date ---------- */
+  const classSelect=document.getElementById("classSelect");
+  const dateInput=document.getElementById("dateInput");
+  dateInput.value=todayStr();
+
+  function renderClassSelect(){
+    classSelect.innerHTML="";
+    if(classes.length===0){
+      const o=document.createElement("option");
+      o.textContent="Keine Klasse — unter „Klasse“ anlegen";
+      o.value="";
+      classSelect.appendChild(o);
+      classSelect.disabled=true;
+      return;
+    }
+    classSelect.disabled=false;
+    classes.forEach(c=>{
+      const o=document.createElement("option");
+      o.value=c.id; o.textContent=c.name;
+      classSelect.appendChild(o);
+    });
+    let active=getActiveClassId();
+    if(!getClass(active)) active=classes[0].id;
+    classSelect.value=active;
+    setActiveClassId(active);
+  }
+  classSelect.addEventListener("change", ()=>{
+    setActiveClassId(classSelect.value);
+    renderAll();
+  });
+  dateInput.addEventListener("change", ()=>{
+    if(!dateInput.value) dateInput.value=todayStr();
+    renderErfassen();
+  });
+
+  /* ---------- Tabs ---------- */
+  const tabBtns=document.querySelectorAll(".tab-btn");
+  const views={
+    erfassen:document.getElementById("view-erfassen"),
+    auswertung:document.getElementById("view-auswertung"),
+    klasse:document.getElementById("view-klasse")
+  };
+  tabBtns.forEach(b=>{
+    b.addEventListener("click", ()=>{
+      tabBtns.forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      Object.keys(views).forEach(k=>views[k].hidden = (k!==b.dataset.tab));
+      if(b.dataset.tab==="auswertung") renderAuswertung();
+      if(b.dataset.tab==="klasse") renderKlasse();
+    });
+  });
+
+  /* ---------- Erfassen ---------- */
+  function getRecord(classId, date, studentId){
+    return (records[classId] && records[classId][date] && records[classId][date][studentId]) || {status:"none", ha:false};
+  }
+  function setRecord(classId, date, studentId, patch){
+    if(!records[classId]) records[classId]={};
+    if(!records[classId][date]) records[classId][date]={};
+    const cur=records[classId][date][studentId] || {status:"none", ha:false};
+    records[classId][date][studentId]={...cur, ...patch};
+    saveRecords(records);
+  }
+
+  function renderErfassen(){
+    const el=views.erfassen;
+    const classId=getActiveClassId();
+    const cls=getClass(classId);
+    el.innerHTML="";
+    if(!cls){
+      el.innerHTML=`<div class="empty">Noch keine Klasse angelegt.<br>Unter „Klasse“ eine CSV importieren oder Schüler anlegen.</div>`;
+      return;
+    }
+    if(cls.students.length===0){
+      el.innerHTML=`<div class="empty">Diese Klasse hat noch keine Schüler.<br>Unter „Klasse“ importieren oder hinzufügen.</div>`;
+      return;
+    }
+    const date=dateInput.value || todayStr();
+    const sorted=sortStudents(cls.students);
+
+    const summary=document.createElement("div");
+    summary.className="date-summary";
+    el.appendChild(summary);
+
+    sorted.forEach((s,i)=>{
+      const rec=getRecord(classId, date, s.id);
+      const row=document.createElement("div");
+      row.className="student-row";
+
+      const nameDiv=document.createElement("div");
+      nameDiv.className="student-name";
+      nameDiv.innerHTML=`<span class="num">${i+1}.</span>${escapeHtml(s.nachname)}, ${escapeHtml(s.vorname)}`;
+      row.appendChild(nameDiv);
+
+      const controls=document.createElement("div");
+      controls.className="row-controls";
+
+      const haBtn=document.createElement("button");
+      haBtn.className="ha-btn"+(rec.ha?" active":"");
+      haBtn.textContent = rec.ha ? "✓ HA fehlt" : "HA fehlt";
+      haBtn.addEventListener("click", ()=>{
+        setRecord(classId, date, s.id, {ha:!rec.ha});
+        toast("Gespeichert");
+        renderErfassen();
+      });
+      controls.appendChild(haBtn);
+
+      const grid=document.createElement("div");
+      grid.className="state-grid";
+      STATES.forEach(st=>{
+        const b=document.createElement("button");
+        b.className="state-btn"+(rec.status===st.code?" active":"");
+        b.dataset.s=st.code;
+        b.textContent=st.label;
+        b.addEventListener("click", ()=>{
+          setRecord(classId, date, s.id, {status:st.code});
+          toast("Gespeichert");
+          renderErfassen();
+        });
+        grid.appendChild(b);
+      });
+      controls.appendChild(grid);
+      row.appendChild(controls);
+      el.appendChild(row);
+    });
+
+    const total=sorted.length;
+    const absent=sorted.filter(s=>getRecord(classId,date,s.id).status==="abwesend").length;
+    const haMiss=sorted.filter(s=>getRecord(classId,date,s.id).ha).length;
+    summary.textContent=`${total} Schüler · ${absent} abwesend · ${haMiss} HA fehlt`;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  }
+
+  /* ---------- Auswertung ---------- */
+  function computeStats(classId, fromDate, toDate){
+    const cls=getClass(classId);
+    if(!cls) return [];
+    const classRecords=records[classId] || {};
+    let dates=Object.keys(classRecords);
+    if(fromDate) dates=dates.filter(d=>d>=fromDate);
+    if(toDate) dates=dates.filter(d=>d<=toDate);
+    dates.sort();
+
+    return sortStudents(cls.students).map(s=>{
+      let sessions=0, absent=0, haFehlt=0, sumValues=0, bewerteteStunden=0;
+      dates.forEach(date=>{
+        sessions++;
+        const rec=(classRecords[date] && classRecords[date][s.id]) || {status:"none", ha:false};
+        if(rec.status==="abwesend") absent++;
+        if(rec.ha) haFehlt++;
+        if(Object.prototype.hasOwnProperty.call(VALUE_OF, rec.status)){
+          bewerteteStunden++;
+          sumValues+=VALUE_OF[rec.status];
+        }
+      });
+      const attendancePct = sessions>0 ? ((sessions-absent)/sessions*100) : null;
+      const quotient = bewerteteStunden>0 ? (sumValues/bewerteteStunden) : null;
+      return {
+        student:s, sessions, absent, haFehlt, sumValues, bewerteteStunden,
+        attendancePct, quotient
+      };
+    });
+  }
+
+  function fmtPct(v){ return v===null ? "–" : v.toFixed(1).replace(".",",")+" %"; }
+  function fmtNum(v){ return v===null ? "–" : (Number.isInteger(v)? v : v.toFixed(2).replace(".",",")); }
+
+  function formatDateDE(iso){
+    const p=iso.split("-");
+    return p.length===3 ? `${p[2]}.${p[1]}.${p[0]}` : iso;
+  }
+
+  // Long-format Zeitreihe: ein Eintrag pro Schüler und erfasstem Datum, inkl. HA-fehlt-Flag
+  function buildLongRows(classId, fromDate, toDate){
+    const cls=getClass(classId);
+    if(!cls) return [];
+    const classRecords=records[classId] || {};
+    let dates=Object.keys(classRecords);
+    if(fromDate) dates=dates.filter(d=>d>=fromDate);
+    if(toDate) dates=dates.filter(d=>d<=toDate);
+    dates.sort();
+    const rows=[];
+    sortStudents(cls.students).forEach(s=>{
+      dates.forEach(date=>{
+        const rec=classRecords[date] && classRecords[date][s.id];
+        if(!rec) return;
+        const statusLabel=(STATES.find(st=>st.code===rec.status)||{}).label || rec.status;
+        const value=Object.prototype.hasOwnProperty.call(VALUE_OF, rec.status) ? VALUE_OF[rec.status] : "";
+        rows.push({nachname:s.nachname, vorname:s.vorname, date, statusLabel, value, ha:rec.ha?"Ja":"Nein"});
+      });
+    });
+    return rows;
+  }
+
+  function renderAuswertung(){
+    const el=views.auswertung;
+    const classId=getActiveClassId();
+    const cls=getClass(classId);
+    el.innerHTML="";
+    if(!cls || cls.students.length===0){
+      el.innerHTML=`<div class="empty">Keine Daten vorhanden.</div>`;
+      return;
+    }
+
+    const filterRow=document.createElement("div");
+    filterRow.className="filter-row";
+    filterRow.innerHTML=`
+      <label>Von<input type="date" id="fromDate"></label>
+      <label>Bis<input type="date" id="toDate"></label>
+    `;
+    el.appendChild(filterRow);
+
+    const exportBtn=document.createElement("button");
+    exportBtn.className="export-btn";
+    exportBtn.textContent="Als CSV exportieren";
+    el.appendChild(exportBtn);
+
+    const listWrap=document.createElement("div");
+    el.appendChild(listWrap);
+
+    function refresh(){
+      const from=document.getElementById("fromDate").value;
+      const to=document.getElementById("toDate").value;
+      const stats=computeStats(classId, from, to);
+      listWrap.innerHTML="";
+      if(stats.every(st=>st.sessions===0)){
+        listWrap.innerHTML=`<div class="empty">Für den gewählten Zeitraum liegen noch keine Einträge vor.</div>`;
+      }
+      stats.forEach(st=>{
+        const card=document.createElement("div");
+        card.className="stat-card";
+        card.innerHTML=`
+          <div class="name">${escapeHtml(st.student.nachname)}, ${escapeHtml(st.student.vorname)}</div>
+          <div class="stat-grid mono">
+            <div class="label">Anwesenheit</div><div class="val">${fmtPct(st.attendancePct)}</div>
+            <div class="label">Fehlende HA</div><div class="val">${st.haFehlt}</div>
+            <div class="label">Summe Mitarbeitswerte</div><div class="val">${st.sumValues}</div>
+            <div class="label">Bewertete Stunden</div><div class="val">${st.bewerteteStunden}</div>
+            <div class="label">Quotient</div><div class="val">${fmtNum(st.quotient)}</div>
+          </div>`;
+        listWrap.appendChild(card);
+      });
+      exportBtn.onclick=()=>{
+        const longRows=buildLongRows(classId, from, to);
+        exportAuswertung(cls, stats, longRows, from, to);
+      };
+    }
+    document.getElementById("fromDate").addEventListener("change", refresh);
+    document.getElementById("toDate").addEventListener("change", refresh);
+    refresh();
+  }
+
+  function esc(v){ const s=String(v); return s.includes(";")||s.includes('"') ? `"${s.replace(/"/g,'""')}"` : s; }
+
+  function buildCombinedCsv(stats, longRows){
+    const lines=[];
+    lines.push("Zusammenfassung");
+    lines.push(["Nachname","Vorname","Anwesenheit_Prozent","Fehlende_HA","Summe_Mitarbeitswerte","Bewertete_Stunden","Quotient"].map(esc).join(";"));
+    stats.forEach(st=>{
+      lines.push([
+        st.student.nachname,
+        st.student.vorname,
+        st.attendancePct===null?"":st.attendancePct.toFixed(1).replace(".",","),
+        st.haFehlt,
+        st.sumValues,
+        st.bewerteteStunden,
+        st.quotient===null?"":st.quotient.toFixed(2).replace(".",",")
+      ].map(esc).join(";"));
+    });
+    lines.push("");
+    lines.push("Zeitreihe (ein Eintrag je Schüler und erfasstem Tag)");
+    lines.push(["Nachname","Vorname","Datum","Status","Mitarbeitswert","HA_fehlt"].map(esc).join(";"));
+    longRows.forEach(r=>{
+      lines.push([r.nachname, r.vorname, formatDateDE(r.date), r.statusLabel, r.value, r.ha].map(esc).join(";"));
+    });
+    return "\uFEFF"+lines.join("\r\n");
+  }
+
+  function downloadCsv(csvText, filename){
+    const blob=new Blob([csvText], {type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportAuswertung(cls, stats, longRows, from, to){
+    const rangeTag=(from||to) ? `_${from||"anfang"}_bis_${to||"heute"}` : "";
+    downloadCsv(buildCombinedCsv(stats, longRows), `Auswertung_${cls.name.replace(/\s+/g,"_")}${rangeTag}.csv`);
+    toast("CSV exportiert");
+  }
+
+  /* ---------- Klasse verwalten ---------- */
+  function parseCsv(text){
+    const delim = text.split("\n")[0].includes(";") ? ";" : ",";
+    const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+    if(lines.length===0) return [];
+    const splitLine=l=>l.split(delim).map(c=>c.trim().replace(/^"|"$/g,""));
+
+    let start=0;
+    let nachIdx=0, vorIdx=1;
+    const firstCells=splitLine(lines[0]).map(c=>c.toLowerCase());
+    const nIdx=firstCells.findIndex(c=>c.includes("nachname"));
+    const vIdx=firstCells.findIndex(c=>c.includes("vorname"));
+    if(nIdx!==-1 || vIdx!==-1){
+      start=1;
+      if(nIdx!==-1) nachIdx=nIdx;
+      if(vIdx!==-1) vorIdx=vIdx;
+    }
+    const out=[];
+    for(let i=start;i<lines.length;i++){
+      const cells=splitLine(lines[i]);
+      const nachname=cells[nachIdx]||"";
+      const vorname=cells[vorIdx]||"";
+      if(nachname||vorname) out.push({id:uid(), nachname, vorname});
+    }
+    return out;
+  }
+
+  function renderKlasse(){
+    const el=views.klasse;
+    el.innerHTML="";
+
+    // Datensicherung (Backup)
+    const backupBlock=document.createElement("section");
+    backupBlock.className="block";
+    backupBlock.innerHTML=`
+      <h2>Datensicherung</h2>
+      <button class="btn secondary" id="exportBackupBtn">Backup exportieren (JSON)</button>
+      <div class="field" style="margin-top:12px;">
+        <label>Backup importieren</label>
+        <input type="file" id="importBackupFile" accept=".json,application/json">
+      </div>
+      <div class="hint">Enthält alle Klassen, Schüler und erfassten Daten. Der Import ersetzt den kompletten aktuellen Stand — vorher im Zweifel selbst noch ein Backup ziehen.</div>
+    `;
+    el.appendChild(backupBlock);
+    backupBlock.querySelector("#exportBackupBtn").addEventListener("click", ()=>{
+      const payload={version:1, exportedAt:new Date().toISOString(), classes, records};
+      const blob=new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; a.download=`Backup_Mitarbeit_${todayStr()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+      toast("Backup exportiert");
+    });
+    backupBlock.querySelector("#importBackupFile").addEventListener("change", (e)=>{
+      const file=e.target.files[0];
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        let data;
+        try{ data=JSON.parse(String(reader.result)); }
+        catch(err){ toast("Datei ist kein gültiges Backup"); return; }
+        if(!data || !Array.isArray(data.classes) || typeof data.records!=="object"){
+          toast("Datei ist kein gültiges Backup"); return;
+        }
+        if(!confirm("Backup importieren? Der komplette aktuelle Datenstand (alle Klassen und Einträge) wird dabei überschrieben.")) { e.target.value=""; return; }
+        classes=data.classes;
+        records=data.records || {};
+        saveClasses(classes);
+        saveRecords(records);
+        setActiveClassId(classes.length ? classes[0].id : "");
+        e.target.value="";
+        toast("Backup importiert");
+        renderClassSelect();
+        renderAll();
+        renderKlasse();
+      };
+      reader.readAsText(file, "UTF-8");
+    });
+
+    // Neue Klasse per CSV
+    const importBlock=document.createElement("section");
+    importBlock.className="block";
+    importBlock.innerHTML=`
+      <h2>Klasse aus CSV importieren</h2>
+      <div class="field">
+        <label>Klassenname</label>
+        <input type="text" id="newClassName" placeholder="z. B. 8b">
+      </div>
+      <div class="field">
+        <label>CSV-Datei (Spalten: Nachname, Vorname)</label>
+        <input type="file" id="csvFile" accept=".csv,text/csv">
+      </div>
+      <button class="btn" id="importBtn">Importieren</button>
+      <div class="hint">Erste Zeile darf eine Kopfzeile mit „Nachname“/„Vorname“ sein. Trennzeichen Komma oder Semikolon werden erkannt.</div>
+    `;
+    el.appendChild(importBlock);
+    importBlock.querySelector("#importBtn").addEventListener("click", ()=>{
+      const name=importBlock.querySelector("#newClassName").value.trim();
+      const fileInput=importBlock.querySelector("#csvFile");
+      if(!name){ toast("Bitte Klassennamen eingeben"); return; }
+      if(!fileInput.files[0]){ toast("Bitte CSV-Datei wählen"); return; }
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const students=parseCsv(String(reader.result));
+        if(students.length===0){ toast("Keine Schüler gefunden"); return; }
+        const newClass={id:uid(), name, students};
+        classes.push(newClass);
+        saveClasses(classes);
+        setActiveClassId(newClass.id);
+        toast(`${students.length} Schüler importiert`);
+        renderClassSelect();
+        renderAll();
+      };
+      reader.readAsText(fileInput.files[0], "UTF-8");
+    });
+
+    // Bestehende Klassen
+    const listBlock=document.createElement("section");
+    listBlock.className="block";
+    listBlock.innerHTML=`<h2>Vorhandene Klassen</h2>`;
+    if(classes.length===0){
+      listBlock.innerHTML+=`<div class="hint">Noch keine Klasse angelegt.</div>`;
+    } else {
+      classes.forEach(c=>{
+        const item=document.createElement("div");
+        item.className="class-item";
+        item.innerHTML=`
+          <div>
+            <div class="cname">${escapeHtml(c.name)}</div>
+            <div class="ccount">${c.students.length} Schüler</div>
+          </div>
+          <div class="class-actions">
+            <button class="icon-btn semester" data-action="semester" data-id="${c.id}">Semester abschließen</button>
+            <button class="icon-btn" data-action="delete" data-id="${c.id}">Löschen</button>
+          </div>
+        `;
+        item.querySelector('[data-action="delete"]').addEventListener("click", ()=>{
+          if(confirm(`Klasse „${c.name}“ inklusive aller gespeicherten Einträge wirklich löschen?`)){
+            classes=classes.filter(x=>x.id!==c.id);
+            saveClasses(classes);
+            delete records[c.id];
+            saveRecords(records);
+            if(getActiveClassId()===c.id) setActiveClassId(classes.length? classes[0].id : "");
+            renderClassSelect();
+            renderAll();
+            renderKlasse();
+          }
+        });
+        item.querySelector('[data-action="semester"]').addEventListener("click", ()=>{
+          if(!confirm(`Semester für „${c.name}“ abschließen?\n\nAlle bisher erfassten Mitarbeit- und Hausaufgaben-Einträge dieser Klasse werden zunächst als CSV exportiert und danach unwiderruflich gelöscht. Die Schülerliste bleibt erhalten. Fortfahren?`)) return;
+          if(!confirm(`Letzte Bestätigung: Einträge von „${c.name}“ jetzt exportieren und anschließend endgültig löschen?`)) return;
+          const stats=computeStats(c.id, "", "");
+          const longRows=buildLongRows(c.id, "", "");
+          downloadCsv(buildCombinedCsv(stats, longRows), `Semesterabschluss_${c.name.replace(/\s+/g,"_")}_${todayStr()}.csv`);
+          records[c.id]={};
+          saveRecords(records);
+          toast("Semester abgeschlossen — Daten exportiert und geleert");
+          renderKlasse();
+          renderAll();
+        });
+        listBlock.appendChild(item);
+      });
+    }
+    el.appendChild(listBlock);
+
+    // Schüler manuell verwalten (aktive Klasse)
+    const activeCls=getClass(getActiveClassId());
+    if(activeCls){
+      const manageBlock=document.createElement("section");
+      manageBlock.className="block";
+      manageBlock.innerHTML=`
+        <h2>Schüler in „${escapeHtml(activeCls.name)}“ verwalten</h2>
+        <div class="field">
+          <label>Nachname</label>
+          <input type="text" id="addNachname">
+        </div>
+        <div class="field">
+          <label>Vorname</label>
+          <input type="text" id="addVorname">
+        </div>
+        <button class="btn secondary" id="addStudentBtn">Schüler hinzufügen</button>
+        <div class="student-list-mini" id="miniList"></div>
+      `;
+      el.appendChild(manageBlock);
+      const miniList=manageBlock.querySelector("#miniList");
+      sortStudents(activeCls.students).forEach(s=>{
+        const row=document.createElement("div");
+        row.className="sm-row";
+        row.innerHTML=`<span>${escapeHtml(s.nachname)}, ${escapeHtml(s.vorname)}</span>`;
+        const del=document.createElement("button");
+        del.className="icon-btn"; del.textContent="Entfernen";
+        del.addEventListener("click", ()=>{
+          if(confirm(`${s.nachname}, ${s.vorname} aus der Klasse entfernen? (Bereits erfasste Daten bleiben gespeichert, tauchen aber nicht mehr auf.)`)){
+            activeCls.students=activeCls.students.filter(x=>x.id!==s.id);
+            saveClasses(classes);
+            renderKlasse();
+            renderAll();
+          }
+        });
+        row.appendChild(del);
+        miniList.appendChild(row);
+      });
+      manageBlock.querySelector("#addStudentBtn").addEventListener("click", ()=>{
+        const nach=manageBlock.querySelector("#addNachname").value.trim();
+        const vor=manageBlock.querySelector("#addVorname").value.trim();
+        if(!nach && !vor){ toast("Bitte Namen eingeben"); return; }
+        activeCls.students.push({id:uid(), nachname:nach, vorname:vor});
+        saveClasses(classes);
+        toast("Schüler hinzugefügt");
+        renderKlasse();
+        renderAll();
+      });
+    }
+  }
+
+  /* ---------- Init ---------- */
+  function renderAll(){
+    renderErfassen();
+  }
+  renderClassSelect();
+  renderAll();
+
+})();
+</script>
+</body>
+</html>
